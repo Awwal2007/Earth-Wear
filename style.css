@@ -639,6 +639,9 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
     border: 0;
 }
+#cart-badge{
+    left: -250px;
+}
 
 @keyframes shimmer {
     0% { background-position: 200% 0; }
@@ -664,6 +667,20 @@ h1, h2, h3, h4, h5, h6 {
     
     .hero-text h2 {
         font-size: 2.5rem;
+    }
+    #cart-badge {
+        top: -2px !important;
+        left: 15px !important;
+        transform: none !important;
+        z-index: 2;
+    }
+    
+    .nav-link svg {
+        width: 20px;
+        height: 20px;
+    }
+    .popover-content{
+        right: 250px;
     }
 }
 
@@ -699,6 +716,23 @@ h1, h2, h3, h4, h5, h6 {
     .btn-hero {
         padding: 10px 20px;
     }
+    #cart-badge {
+        top: -2px !important;
+        left: 15px !important;
+        transform: none !important;
+        z-index: 2;
+    }
+    
+    .nav-link svg {
+        width: 20px;
+        height: 20px;
+    }
+    .popover-content{
+        right: 250px;
+    }
+    .searchINP{
+        min-width: 200px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -727,15 +761,29 @@ h1, h2, h3, h4, h5, h6 {
         font-size: 1rem;
         padding: 5px 15px;
     }
-    #cart-badge {
+    /* #cart-badge {
         top: 0px;
         left: 100px;
-        z-index: 2;
-    }
+        
+    } */
     .popover-content{
         right: 0px;
     }
-    /* #cart-badge{
-        
-    } */
+    #cart-badge {
+        top: -2px !important;
+        left: 15px !important;
+        transform: none !important;
+        z-index: 2;
+    }
+    
+    .nav-link svg {
+        width: 20px;
+        height: 20px;
+    }
+    .popover-content{
+        right: 50px;
+    }
+    .searchINP{
+        min-width: 200px;
+    }
 }
