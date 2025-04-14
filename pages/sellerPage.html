@@ -292,10 +292,11 @@
         <div class="sidebar-menu">
             <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <a href="#products"><i class="fas fa-box-open"></i> Products</a>
+            <a href="../index.html"><i class="fa-solid fa-house"></i> Home</a>
             <a href="#orders"><i class="fas fa-shopping-bag"></i> Orders</a>
             <a href="#profile"><i class="fas fa-user-circle"></i> Profile</a>
             <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
-            <a onclick="logOut()" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <button class="btn" id="logOut" ><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </div>
 
@@ -514,6 +515,7 @@
         const ordersLoader = document.getElementById("ordersLoader");
     
         // SweetAlert2 Toast
+        const logOutBTN = document.getElementById("logOut")
         const Toast = Swal.mixin({
             toast: true,
             position: "top-end",
@@ -1000,7 +1002,7 @@
                 reader.onerror = error => reject(error);
             });
         }
-    
+        logOutBTN.addEventListener("click", logOut)
         function logOut() {
             signOut(auth).then(() => {
                 Toast.fire({
