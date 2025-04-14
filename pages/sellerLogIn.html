@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Seller Login</title>
+    <link rel="icon" href="../multimedia/image/Project-logo.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+        /* Full-screen container */
+        .login-section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Image on larger screens */
+        .login-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px 0 0 10px;
+        }
+
+        /* Form container */
+        .login-container {
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .login-container h3 {
+            color: #4e73df;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #5a5c69;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #d1d3e2;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2e59d9;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .remember-me {
+            color: #5a5c69;
+        }
+
+        .forgot-password {
+            color: #4e73df;
+            font-weight: 500;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .register-link {
+            color: #4e73df;
+            font-weight: 600;
+        }
+
+        .register-link:hover {
+            text-decoration: underline;
+        }
+
+        #errorP {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Verification banner */
+        .verification-banner {
+            display: none;
+            background-color: #e7f6fd;
+            border-left: 4px solid #4e73df;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .verification-banner i {
+            color: #4e73df;
+            margin-right: 10px;
+        }
+
+        /* Background image for mobile */
+        @media (max-width: 768px) {
+            .login-section {
+                background: url('../multimedia/image/[GetPaidStock.com]-67dea020b66982.jpg') no-repeat center center;
+                background-size: cover;
+            }
+
+            .login-container {
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(5px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row login-section">
+        <!-- Form Section -->
+        <div class="col-md-6 d-flex justify-content-center align-items-center">
+            <div class="login-container">
+                <h3 class="text-center">Seller Login</h3>
+                
+                <!-- Verification Banner -->
+                <div class="verification-banner" id="verificationBanner">
+                    <i class="fas fa-envelope"></i>
+                    <span>A verification email has been sent to your email address. Please verify your email to login.</span>
+                </div>
+                
+                <form id="signInForm">
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                    </div>
+    
+                    <!-- Password -->
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                    </div>
+    
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="d-flex justify-content-between mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label remember-me" for="rememberMe">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="errorP"></div>
+    
+                    <!-- Login Button -->
+                    <button type="submit" id="submitBTN" class="btn btn-primary w-100">
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        Login
+                    </button>
+    
+                    <!-- Sign Up Link -->
+                    <p class="text-center mt-4">Not a seller yet? <a href="./sellerSignUp.html" class="register-link">Register here</a></p>
+                </form>
+            </div>
+        </div>
+        <!-- Image Section (Only visible on larger screens) -->
+        <div class="col-md-6 d-none d-md-block">
+            <img src="../multimedia/image/[GetPaidStock.com]-67dea020b66982.jpg" alt="Seller Login" class="login-image">
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { 
+        getAuth, 
+        signInWithEmailAndPassword, 
+        onAuthStateChanged,
+        sendEmailVerification
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBOZcMMz-KmryhPkO0ith6ThUXmuv7Q4vk",
+        authDomain: "awwal-7171e.firebaseapp.com",
+        projectId: "awwal-7171e",
+        storageBucket: "awwal-7171e.firebasestorage.app",
+        messagingSenderId: "920616341620",
+        appId: "1:920616341620:web:adaf1c282f04a513d44121"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const signInForm = document.getElementById("signInForm");
+    const errorP = document.getElementById("errorP");
+    const spinner = document.getElementById("spinner");
+    const submitBTN = document.getElementById("submitBTN");
+    const verificationBanner = document.getElementById("verificationBanner");
+
+    // Handle the form submission
+    signInForm.addEventListener("submit", logInUser);
+
+    async function logInUser(e) {
+        try {
+            e.preventDefault();
+            spinner.classList.remove("d-none");
+            submitBTN.disabled = true;
+            errorP.textContent = "";
+            verificationBanner.style.display = "none";
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const rememberMe = document.getElementById("rememberMe").checked;
+
+            // Sign in the user with email and password
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // Check if email is verified
+            if (!user.emailVerified) {
+                // Send verification email if not verified
+                await sendEmailVerification(user);
+                
+                // Sign out the user since they're not verified
+                await auth.signOut();
+                
+                // Show verification message
+                verificationBanner.style.display = "block";
+                errorP.textContent = "Please verify your email address before logging in. A new verification email has been sent.";
+                return;
+            }
+
+            // Check if the signed-in user is a seller
+            const userRef = doc(db, "seller", user.uid);
+            const userDoc = await getDoc(userRef);
+
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+
+                if (userData.role === "seller") {
+                    // Redirect to the seller page after successful login
+                    window.location.href = "./sellerPage.html";
+                } else {
+                    errorP.textContent = "You are not registered as a seller. Please sign up as a seller.";
+                }
+            } else {
+                errorP.textContent = "Seller account not found. Please register as a seller.";
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            
+            if (error.code === "auth/invalid-credential") {
+                errorP.textContent = "Invalid email or password. Please try again.";
+            } else if (error.code === "auth/network-request-failed") {
+                errorP.textContent = "Network error. Please check your internet connection.";
+            } else if (error.code === "auth/too-many-requests") {
+                errorP.textContent = "Too many failed attempts. Please try again later.";
+            } else if (error.code === "auth/user-disabled") {
+                errorP.textContent = "This account has been disabled. Please contact support.";
+            } else {
+                errorP.textContent = "Login failed. Please try again.";
+            }
+        } finally {
+            spinner.classList.add("d-none");
+            submitBTN.disabled = false;
+        }
+    }
+
+    // Handle auth state changes
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Check if user is verified and redirect if already logged in
+            if (user.emailVerified) {
+                getDoc(doc(db, "seller", user.uid)).then((doc) => {
+                    if (doc.exists() && doc.data().role === "seller") {
+                        window.location.href = "./sellerPage.html";
+                    }
+                });
+            }
+        }else{
+            console.log("no one is sign in");
+            
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

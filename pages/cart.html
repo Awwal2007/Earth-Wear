@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center">🛒 Your Cart</h2>
+    <div id="cartItems" class="row mt-4"></div>
+    <div id="cartContainer" class="row mt-4"></div>
+    <h4 id="totalPrice"></h4>
+
+    <div class="text-center mt-4">
+        <button id="checkout" class="btn btn-success mt-2">Checkout</button>
+        <button id="clearCart" class="btn btn-danger mt-2">Clear Cart</button>
+    </div>
+</div>
+
+<!-- Toast container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+    <div id="toastContainer" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage">
+                <!-- Message gets inserted here -->
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import {
+        getFirestore, collection, query, where, getDocs, getDoc,
+        updateDoc, deleteDoc, doc, addDoc
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBOZcMMz-KmryhPkO0ith6ThUXmuv7Q4vk",
+        authDomain: "awwal-7171e.firebaseapp.com",
+        projectId: "awwal-7171e",
+        storageBucket: "awwal-7171e.firebasestorage.app",
+        messagingSenderId: "920616341620",
+        appId: "1:920616341620:web:adaf1c282f04a513d44121"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Function to display the User Cart
+    async function displayUserCart() {
+        const user = auth.currentUser;
+        if (!user) {
+            showToast("Please log in to view your cart.", true);
+            return;
+        }
+
+        const cartDisplay = document.getElementById("cartItems");
+        cartDisplay.innerHTML = `<p>Loading cart...</p>`;
+
+        try {
+            const userCartRef = collection(db, "users", user.uid, "cart");
+            const querySnap = await getDocs(userCartRef);
+
+            if (querySnap.empty) {
+                cartDisplay.innerHTML = `<p>Your cart is empty 🛒</p>`;
+                return;
+            }
+
+            let total = 0;
+            cartDisplay.innerHTML = "";
+
+            querySnap.forEach((docSnap) => {
+                const item = docSnap.data();
+                total += item.price * item.quantity;
+
+                cartDisplay.innerHTML += `
+                    <div class="cart-item mb-3 d-flex align-items-center" data-id="${docSnap.id}">
+                        <img src="${item.image}" width="50" height="50" class="me-2 rounded">
+                        <div class="flex-grow-1">
+                            <div><strong>${item.name}</strong></div>
+                            <div>$${item.price.toFixed(2)}</div>
+                            <div class="d-flex align-items-center mt-1">
+                                <button class="btn btn-sm btn-outline-secondary decrease-quantity" data-id="${docSnap.id}">-</button>
+                                <span class="mx-2">${item.quantity}</span>
+                                <button class="btn btn-sm btn-outline-secondary increase-quantity" data-id="${docSnap.id}">+</button>
+                            </div>
+                        </div>
+                        <div class="ms-3">
+                            <button class="btn btn-sm btn-danger remove-from-cart" data-id="${docSnap.id}">&times;</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cartDisplay.innerHTML += `<hr><div><strong>Total:</strong> $${total.toFixed(2)}</div>`;
+
+        } catch (error) {
+            console.error("Error fetching cart:", error);
+            showToast("Could not load cart.", "bg-danger");
+        }
+    }
+
+    // Call displayCart when page loads
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            displayUserCart();
+        } else {
+            showToast("Redirecting to login...", "bg-warning");
+            window.location.href = "./signIn.html";
+        }
+    });
+
+    document.addEventListener("click", async (e) => {
+        const user = auth.currentUser;
+        if (!user) {
+            showToast("You must be logged in to modify your cart.", "bg-danger");
+            return;
+        }
+
+        const target = e.target;
+        const itemId = target.getAttribute("data-id");
+        if (!itemId) return;
+
+        const cartRef = doc(db, "users", user.uid, "cart", itemId);
+
+        try {
+            if (target.classList.contains("increase-quantity")) {
+                const cartDoc = await getDoc(cartRef);
+                const currentQuantity = cartDoc.data().quantity;
+
+                await updateDoc(cartRef, {
+                    quantity: currentQuantity + 1
+                });
+                displayUserCart();
+            }
+
+            if (target.classList.contains("decrease-quantity")) {
+                const cartDoc = await getDoc(cartRef);
+                const currentQuantity = cartDoc.data().quantity;
+
+                if (currentQuantity > 1) {
+                    await updateDoc(cartRef, {
+                        quantity: currentQuantity - 1
+                    });
+                    displayUserCart();
+                } else {
+                    showToast("Quantity cannot be less than 1.", "bg-danger");
+                }
+            }
+
+            if (target.classList.contains("remove-from-cart")) {
+                await deleteDoc(cartRef);
+                showToast("Item removed from cart.");
+                displayUserCart();
+            }
+
+        } catch (error) {
+            console.error("Cart operation error:", error);
+            showToast("Something went wrong.", "bg-danger");
+        }
+    });
+
+    document.getElementById("clearCart").addEventListener("click", clearCart);
+    // Function to clear cart
+    async function clearCart() {
+        if (!currentUser) {
+            showToast("Login required.", "bg-danger");
+            return;
+        }
+
+        try {
+            const userCartRef = collection(db, "users", currentUser.uid, "cart");
+            const querySnap = await getDocs(userCartRef);
+
+            for (const docSnap of querySnap.docs) {
+                await deleteDoc(docSnap.ref);
+            }
+
+            showToast("All items have been removed from the cart.", "bg-success");
+            displayUserCart();
+        } catch (error) {
+            console.error("Error clearing cart:", error);
+            showToast("Error clearing cart.", "bg-danger");
+        }
+    }
+
+    document.getElementById("checkout").addEventListener("click", checkout);
+    // Checkout function
+    async function checkout() {
+        if (!currentUser) {
+            showToast("Please sign in to proceed with checkout.", "bg-danger");
+            setTimeout(() => {
+                window.location.href = "./signIn.html"
+            }, 1500);
+            return;
+        }
+
+        try {
+            // const userCartRef = collection(db, "users", currentUser.uid, "cart");
+            // const cartItems = await getDocs(userCartRef);
+
+            if (cartItems.empty) {
+                showToast("Your cart is empty, redirecting to Home Page...", "bg-danger");                
+                setTimeout(() => {
+                window.location.href = "../index.html"
+                }, 1500);
+                return;
+            }
+
+            // const ordersRef = collection(db, "orders");
+
+            // for (const docSnap of cartItems.docs) {
+            //     const data = docSnap.data();
+            //     await addDoc(ordersRef, {
+            //         ...data,
+            //         userId: currentUser.uid,
+            //         orderedAt: new Date(),
+            //         status: "Pending"
+            //     });
+
+            //     // await deleteDoc(docSnap.ref); // clear item from cart
+            // }
+
+            // showToast("Order placed successfully!", "bg-success");
+            location.href = "./checkout.html";
+        } catch (error) {
+            console.error("Checkout error:", error);
+            showToast("Error processing your checkout.", "bg-danger");
+        }
+    }
+
+    // showToast Function
+    function showToast(message, color = "bg-primary") {
+        const toastEl = document.getElementById("toastContainer");
+        const toastBody = document.getElementById("toastMessage");
+
+        toastEl.className = `toast align-items-center text-white ${color} border-0`;
+        toastBody.textContent = message;
+
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

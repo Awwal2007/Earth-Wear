@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Seller Registration</title>
+    <link rel="icon" href="../multimedia/image/Project-logo.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --accent-color: #2e59d9;
+            --text-color: #5a5c69;
+            --light-color: #ffffff;
+            --border-color: #d1d3e2;
+        }
+        
+        body {
+            background-color: var(--secondary-color);
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-color);
+        }
+        
+        .register-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            background: var(--light-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .register-container h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .password-strength {
+            height: 5px;
+            margin-top: 5px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .password-hint {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .image-upload-container {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        
+        .image-upload-container:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+        
+        .image-upload-container i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .image-preview-container {
+            display: none;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .remove-image {
+            margin-top: 10px;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .verification-banner {
+            display: none;
+            background-color: #e7f6fd;
+            border-left: 4px solid #4e73df;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .verification-banner i {
+            color: #4e73df;
+            margin-right: 10px;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 2;
+        }
+        
+        .step.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .step.completed {
+            background-color: #1cc88a;
+            color: white;
+        }
+        
+        .step-line {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        
+        .step-line-progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .form-step {
+            display: none;
+        }
+        
+        .form-step.active {
+            display: block;
+        }
+        
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        #errorP {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .terms-link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .terms-link:hover {
+            text-decoration: underline;
+        }
+        
+        .login-link {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .login-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 25px;
+                margin: 15px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container">
+    <div class="register-container">
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step" id="step2">2</div>
+            <div class="step" id="step3">3</div>
+            <div class="step-line">
+                <div class="step-line-progress" id="stepProgress"></div>
+            </div>
+        </div>
+        
+        <h3 class="text-center">Seller Registration</h3>
+        
+        <!-- Verification Banner (shown after registration) -->
+        <div class="verification-banner" id="verificationBanner">
+            <i class="fas fa-envelope"></i>
+            <span>A verification email has been sent to your email address. Please check your inbox and verify your email to complete registration.</span>
+        </div>
+        
+        <form id="signUpForm">
+            <!-- Step 1: Basic Information -->
+            <div class="form-step active" id="step1Form">
+                <!-- Business Name -->
+                <div class="mb-4">
+                    <label for="businessName" class="form-label">Business Name</label>
+                    <input type="text" class="form-control" id="businessName" placeholder="Enter your business name" required>
+                </div>
+                
+                <!-- Goods category -->
+                <div class="mb-4">
+                    <label for="storeName" class="form-label">Goods Category</label>
+                    <select class="form-control" id="storeName" required>
+                        <option value="" disabled selected>Select your category</option>
+                        <option value="Electronics">WomenCloth </option>
+                        <option value="Fashion">Men Cloth</option>
+                        <option value="Home & Garden">Underlings</option>
+                        <option value="Beauty">Shoes</option>
+                        <option value="Sports">Sports</option>
+                    </select>
+                </div>
+                
+                <div class="form-footer">
+                    <button type="button" class="btn btn-secondary" disabled>Back</button>
+                    <button type="button" class="btn btn-primary" id="nextStep1">Next</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Contact Information -->
+            <div class="form-step" id="step2Form">
+                <!-- Email -->
+                <div class="mb-4">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                    <div class="invalid-feedback">Please provide a valid email address.</div>
+                </div>
+                
+                <!-- Phone Number -->
+                <div class="mb-4">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number" required>
+                </div>
+                
+                <!-- Password -->
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                    </div>
+                    <div class="password-hint">
+                        Password must be at least 6 characters long
+                    </div>
+                </div>
+                
+                <!-- Confirm Password -->
+                <div class="mb-4">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                </div>
+                
+                <div class="form-footer">
+                    <button type="button" class="btn btn-secondary" id="backStep2">Back</button>
+                    <button type="button" class="btn btn-primary" id="nextStep2">Next</button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Additional Information -->
+            <div class="form-step" id="step3Form">
+                <!-- Upload Profile Image -->
+                <div class="mb-4">
+                    <label class="form-label">Business Logo/Image</label>
+                    <div class="image-upload-container" id="imageUploadContainer">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload or drag and drop</p>
+                        <p class="small text-muted">PNG, JPG (Max. 2MB)</p>
+                    </div>
+                    <input type="file" class="d-none" id="image" accept="image/*">
+                    <div class="image-preview-container" id="imagePreviewContainer">
+                        <img src="" class="image-preview" id="imagePreview">
+                        <p class="remove-image" id="removeImage"><i class="fas fa-times"></i> Remove image</p>
+                    </div>
+                </div>
+                
+                <!-- Terms & Conditions -->
+                <div class="mb-4 form-check">
+                    <input type="checkbox" class="form-check-input" id="terms" required>
+                    <label class="form-check-label" for="terms">I agree to the <a href="#" class="terms-link">Terms & Conditions</a> and <a href="#" class="terms-link">Privacy Policy</a></label>
+                </div>
+                
+                <!-- Error Message -->
+                <div>
+                    <p id="errorP"></p>
+                </div>
+                
+                <div class="form-footer">
+                    <button type="button" class="btn btn-secondary" id="backStep3">Back</button>
+                    <button type="submit" id="submitBTN" class="btn btn-primary">
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        Complete Registration
+                    </button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Already Have an Account? -->
+        <p class="text-center mt-4">Already a seller? <a href="./sellerLogIn.html" class="login-link">Login here</a></p>
+    </div>
+</div>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, setDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { 
+        getAuth, 
+        createUserWithEmailAndPassword, 
+        sendEmailVerification,
+        updateProfile
+    } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBOZcMMz-KmryhPkO0ith6ThUXmuv7Q4vk",
+        authDomain: "awwal-7171e.firebaseapp.com",
+        projectId: "awwal-7171e",
+        storageBucket: "awwal-7171e.firebasestorage.app",
+        messagingSenderId: "920616341620",
+        appId: "1:920616341620:web:adaf1c282f04a513d44121"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const sellerColRef = collection(db, 'seller');
+
+    // DOM Elements
+    const signUpForm = document.getElementById("signUpForm");
+    const imageInput = document.getElementById("image");
+    const imagePreview = document.getElementById("imagePreview");
+    const imageUploadContainer = document.getElementById("imageUploadContainer");
+    const imagePreviewContainer = document.getElementById("imagePreviewContainer");
+    const removeImage = document.getElementById("removeImage");
+    const errorP = document.getElementById("errorP");
+    const submitBTN = document.getElementById("submitBTN");
+    const spinner = document.getElementById("spinner");
+    const verificationBanner = document.getElementById("verificationBanner");
+    const passwordInput = document.getElementById("password");
+    const passwordStrengthBar = document.getElementById("passwordStrengthBar");
+
+    // Step elements
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+    const step3 = document.getElementById("step3");
+    const stepProgress = document.getElementById("stepProgress");
+    const step1Form = document.getElementById("step1Form");
+    const step2Form = document.getElementById("step2Form");
+    const step3Form = document.getElementById("step3Form");
+    const nextStep1Btn = document.getElementById("nextStep1");
+    const nextStep2Btn = document.getElementById("nextStep2");
+    const backStep2Btn = document.getElementById("backStep2");
+    const backStep3Btn = document.getElementById("backStep3");
+
+    // Current step tracking
+    let currentStep = 1;
+
+    // Event listeners for step navigation
+    nextStep1Btn.addEventListener("click", () => validateAndGoToStep(1, 2));
+    nextStep2Btn.addEventListener("click", () => validateAndGoToStep(2, 3));
+    backStep2Btn.addEventListener("click", () => goToStep(2, 1));
+    backStep3Btn.addEventListener("click", () => goToStep(3, 2));
+
+    // Image upload handling
+    imageUploadContainer.addEventListener("click", () => imageInput.click());
+    imageInput.addEventListener("change", handleImageUpload);
+    removeImage.addEventListener("click", resetImageUpload);
+
+    // Password strength indicator
+    passwordInput.addEventListener("input", updatePasswordStrength);
+
+    // Form submission
+    signUpForm.addEventListener("submit", createUserAccount);
+
+    // Functions
+    function validateAndGoToStep(current, next) {
+        let isValid = true;
+        
+        if (current === 1) {
+            const businessName = document.getElementById("businessName").value.trim();
+            const storeName = document.getElementById("storeName").value.trim();
+            
+            if (!businessName) {
+                showError("Business name is required");
+                isValid = false;
+            }
+            
+            if (!storeName) {
+                showError("Goods category is required");
+                isValid = false;
+            }
+        } else if (current === 2) {
+            const email = document.getElementById("email").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const confirmPassword = document.getElementById("confirmPassword").value.trim();
+            
+            // Email validation
+            let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            if (!emailRegex.test(email)) {
+                showError("Please enter a valid email address");
+                isValid = false;
+            }
+            
+            // Phone validation (basic)
+            if (!phone) {
+                showError("Phone number is required");
+                isValid = false;
+            }
+            
+            // Password validation
+            if (password.length < 6) {
+                showError("Password should be at least 6 characters");
+                isValid = false;
+            }
+            
+            if (password !== confirmPassword) {
+                showError("Passwords do not match");
+                isValid = false;
+            }
+        }
+        
+        if (isValid) {
+            goToStep(current, next);
+        }
+    }
+
+    function goToStep(current, next) {
+        // Hide current step
+        document.getElementById(`step${current}Form`).classList.remove("active");
+        document.getElementById(`step${current}`).classList.remove("active");
+        
+        // Show next step
+        document.getElementById(`step${next}Form`).classList.add("active");
+        document.getElementById(`step${next}`).classList.add("active");
+        
+        // Update progress bar
+        currentStep = next;
+        updateStepProgress();
+    }
+
+    function updateStepProgress() {
+        let progress = 0;
+        if (currentStep === 2) {
+            progress = 50;
+        } else if (currentStep === 3) {
+            progress = 100;
+        }
+        stepProgress.style.width = `${progress}%`;
+        
+        // Update step indicators
+        if (currentStep >= 2) {
+            step1.classList.add("completed");
+            step1.classList.remove("active");
+        }
+        if (currentStep >= 3) {
+            step2.classList.add("completed");
+            step2.classList.remove("active");
+        }
+    }
+
+    function handleImageUpload(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Check file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showError("Image size should be less than 2MB");
+                return;
+            }
+            
+            // Check file type
+            if (!file.type.match('image.*')) {
+                showError("Please select an image file");
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imagePreview.src = event.target.result;
+                imageUploadContainer.style.display = "none";
+                imagePreviewContainer.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function resetImageUpload() {
+        imageInput.value = "";
+        imagePreview.src = "";
+        imageUploadContainer.style.display = "block";
+        imagePreviewContainer.style.display = "none";
+    }
+
+    function updatePasswordStrength() {
+        const password = passwordInput.value;
+        let strength = 0;
+        
+        // Length check
+        if (password.length > 5) strength += 20;
+        if (password.length > 8) strength += 20;
+        
+        // Character type checks
+        if (/[A-Z]/.test(password)) strength += 20;
+        if (/[0-9]/.test(password)) strength += 20;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+        
+        // Update the strength bar
+        passwordStrengthBar.style.width = `${strength}%`;
+        
+        // Update color based on strength
+        if (strength < 40) {
+            passwordStrengthBar.style.backgroundColor = "#dc3545"; // Red
+        } else if (strength < 80) {
+            passwordStrengthBar.style.backgroundColor = "#fd7e14"; // Orange
+        } else {
+            passwordStrengthBar.style.backgroundColor = "#28a745"; // Green
+        }
+    }
+
+    function showError(message) {
+        errorP.textContent = message;
+        errorP.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    async function createUserAccount(e) {
+        e.preventDefault();
+        spinner.classList.remove("d-none");
+        submitBTN.disabled = true;
+        errorP.textContent = "";
+        
+        // Final validation
+        if (!document.getElementById("terms").checked) {
+            showError("You must agree to the terms and conditions");
+            spinner.classList.add("d-none");
+            submitBTN.disabled = false;
+            return;
+        }
+        
+        const file = imageInput.files[0];
+        const reader = new FileReader();
+        
+        reader.onloadend = async function() {
+            const userDetails = {
+                businessName: document.getElementById("businessName").value.trim(),
+                storeName: document.getElementById("storeName").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                phone: document.getElementById("phone").value.trim(),
+                password: document.getElementById("password").value.trim(),
+                confirmPassword: document.getElementById("confirmPassword").value.trim(),
+                termsAccepted: document.getElementById("terms").checked,
+                image: reader.result || null,
+                role: "seller",
+                emailVerified: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            try {
+                // Register the user
+                const { password, confirmPassword, termsAccepted, ...details } = userDetails;
+                const userCredential = await createUserWithEmailAndPassword(auth, details.email, password);
+                const user = userCredential.user;
+                
+                // Update user profile with business name
+                await updateProfile(user, {
+                    displayName: userDetails.businessName
+                });
+                
+                // Send email verification
+                await sendEmailVerification(user);
+                
+                // Save user details in Firestore with role 'seller'
+                const docRef = doc(sellerColRef, user.uid);
+                await setDoc(docRef, details);
+                
+                // Show success message and verification banner
+                verificationBanner.style.display = "block";
+                signUpForm.reset();
+                resetImageUpload();
+                
+                // Redirect to login page after 5 seconds
+                setTimeout(() => {
+                    location.href = "./sellerLogIn.html";
+                }, 5000);
+                
+            } catch (error) {
+                console.error("Registration error:", error);
+                
+                if (error.code === "auth/email-already-in-use") {
+                    showError("This email is already registered. Please use a different email or login.");
+                } else if (error.code === "auth/weak-password") {
+                    showError("Password should be at least 6 characters");
+                } else if (error.code === "auth/invalid-email") {
+                    showError("Please enter a valid email address");
+                } else {
+                    showError("Registration failed. Please try again later.");
+                }
+            } finally {
+                spinner.classList.add("d-none");
+                submitBTN.disabled = false;
+            }
+        };
+        
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            reader.onloadend();
+        }
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

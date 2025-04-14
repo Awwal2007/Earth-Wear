@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mt-4">Edit Product</h1>
+        <form id="editProductForm">
+            <div class="mb-3">
+                <label for="productName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="productName" required>
+            </div>
+            <div class="mb-3">
+                <label for="productPrice" class="form-label">Price ($)</label>
+                <input type="number" class="form-control" id="productPrice" required>
+            </div>
+            <div class="mb-3">
+                <label for="productDescription" class="form-label">Description</label>
+                <textarea class="form-control" id="productDescription" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="productImage" class="form-label">Product Image</label>
+                <input type="file" class="form-control" id="productImage">
+                <img id="previewImage" class="img-thumbnail mt-2" style="max-width: 150px;">
+            </div>
+            <button type="submit" id="submitBTN" class="btn btn-primary">
+                <span class="spinner-border spinner-border-sm d-none" id="spinner"></span>
+                Update Product
+            </button>
+        </form>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-storage.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOZcMMz-KmryhPkO0ith6ThUXmuv7Q4vk",
+            authDomain: "awwal-7171e.firebaseapp.com",
+            projectId: "awwal-7171e",
+            storageBucket: "awwal-7171e.firebasestorage.app",
+            messagingSenderId: "920616341620",
+            appId: "1:920616341620:web:adaf1c282f04a513d44121"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Get product ID from URL
+        const searchParams = new URLSearchParams(window.location.search);
+        const productId = searchParams.get("id");
+
+        // Form Elements
+        const editForm = document.getElementById("editProductForm");
+        const productName = document.getElementById("productName");
+        const productPrice = document.getElementById("productPrice");
+        const productDescription = document.getElementById("productDescription");
+        const productImage = document.getElementById("productImage");
+        const previewImage = document.getElementById("previewImage");
+        const submitBTN = document.getElementById("submitBTN");
+
+        let base64Image = ""; // Store the Base64 image string
+
+        // Load existing product details
+        async function loadProduct() {
+            if (!productId) {
+                alert("No product ID found!");
+                return;
+            }
+            const docRef = doc(db, "products", productId);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const actualData = docSnap.data();
+                productName.value = actualData.name;
+                productPrice.value = actualData.price;
+                productDescription.value = actualData.description;
+                if (actualData.image) {
+                    previewImage.src = actualData.image;
+                    base64Image = actualData.image;
+                }
+            } else {
+                alert("Product not found!");
+            }
+        }
+
+        loadProduct();
+
+        // Convert image to Base64
+        productImage.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    base64Image = e.target.result;
+                    previewImage.src = base64Image;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Update product details
+        editForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Show spinner and disable button
+            spinner.classList.remove("d-none");
+            submitBTN.disabled = true;
+
+
+            try {
+                const updatedData = {
+                name: productName.value.trim(),
+                price: parseFloat(productPrice.value.trim()),
+                description: productDescription.value.trim(),
+                image: base64Image, // Store Base64 image
+            };
+
+            const docRef = doc(db, "products", productId);
+            await updateDoc(docRef, updatedData);
+
+            alert("Product updated successfully!");
+            window.location.href = "./sellerPage.html"; // Redirect to product list page
+            } catch (error) {
+                console.error("Error updating product:", error);
+                alert("Error updating product.");
+            }finally{
+                // Hide spinner and enable button
+                spinner.classList.add("d-none");
+                submitBTN.disabled = false;
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

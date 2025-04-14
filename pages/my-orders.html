@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders - Earth Wear</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --primary: #10B981;
+      --primary-light: #D1FAE5;
+      --primary-dark: #059669;
+      --secondary: #3B82F6;
+      --secondary-light: #DBEAFE;
+      --dark: #1F2937;
+      --light: #F9FAFB;
+      --gray: #6B7280;
+      --light-gray: #E5E7EB;
+      --danger: #EF4444;
+      --danger-light: #FEE2E2;
+      --warning: #F59E0B;
+      --warning-light: #FEF3C7;
+      --success: #10B981;
+      --success-light: #D1FAE5;
+      --info: #60A5FA;
+      --border-radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+    }
+    
+    .navbar {
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .order-card {
+      border: none;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+      background: white;
+    }
+    
+    .order-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .order-img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--light-gray);
+    }
+    
+    .order-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .status-pending {
+      background-color: var(--warning-light);
+      color: var(--warning);
+    }
+    
+    .status-shipped {
+      background-color: var(--secondary-light);
+      color: var(--secondary);
+    }
+    
+    .status-delivered {
+      background-color: var(--success-light);
+      color: var(--success);
+    }
+    
+    .status-cancelled {
+      background-color: var(--danger-light);
+      color: var(--danger);
+    }
+    
+    .btn-cancel {
+      background-color: white;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    .btn-cancel:hover {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem 0;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    .empty-state i {
+      font-size: 3.5rem;
+      color: var(--light-gray);
+      margin-bottom: 1rem;
+    }
+    
+    .empty-state h4 {
+      margin-bottom: 0.5rem;
+    }
+    
+    .loading-spinner {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-width: 0.2em;
+    }
+    
+    .order-date {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+    
+    .order-price {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .order-quantity {
+      background-color: var(--light-gray);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      color: var(--gray);
+    }
+    
+    .order-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .btn-view {
+      background-color: white;
+      color: var(--secondary);
+      border: 1px solid var(--secondary);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    .btn-view:hover {
+      background-color: var(--secondary);
+      color: white;
+    }
+    
+    .badge-icon {
+      margin-right: 4px;
+    }
+    
+    /* Skeleton loading animation */
+    @keyframes shimmer {
+      0% { background-position: -468px 0 }
+      100% { background-position: 468px 0 }
+    }
+    
+    .skeleton {
+      background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+      background-size: 800px 104px;
+      animation: shimmer 1.5s infinite linear;
+      border-radius: 4px;
+    }
+    
+    .skeleton-img {
+      width: 80px;
+      height: 80px;
+    }
+    
+    .skeleton-text {
+      height: 14px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+    }
+    
+    .skeleton-text-sm {
+      height: 12px;
+      width: 60%;
+    }
+    
+    .skeleton-button {
+      height: 28px;
+      width: 80px;
+      border-radius: 20px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .order-img {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .empty-state {
+        padding: 2rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#" style="color: var(--primary);">
+        <img style="width: 50px;" src="../multimedia/image/Project-logo.png" alt="projectLogo"></i>Earth Wear
+      </a>
+      <div class="d-flex align-items-center">
+        <a href="index.html" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i>Back to Shop
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0 fw-bold"><i class="bi bi-bag-check me-2"></i>My Orders</h2>
+      <div class="text-muted">
+        <span id="orderCount">0</span> orders
+      </div>
+    </div>
+    
+    <!-- Loading State -->
+    <div id="loadingState" class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card order-card p-3">
+          <div class="d-flex">
+            <div class="skeleton skeleton-img me-3"></div>
+            <div style="width: 100%;">
+              <div class="skeleton skeleton-text" style="width: 70%;"></div>
+              <div class="skeleton skeleton-text-sm"></div>
+              <div class="skeleton skeleton-text" style="width: 40%; margin-top: 15px;"></div>
+              <div class="skeleton skeleton-text" style="width: 30%; margin: 5px 0 15px;"></div>
+              <div class="skeleton skeleton-button"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card order-card p-3">
+          <div class="d-flex">
+            <div class="skeleton skeleton-img me-3"></div>
+            <div style="width: 100%;">
+              <div class="skeleton skeleton-text" style="width: 70%;"></div>
+              <div class="skeleton skeleton-text-sm"></div>
+              <div class="skeleton skeleton-text" style="width: 40%; margin-top: 15px;"></div>
+              <div class="skeleton skeleton-text" style="width: 30%; margin: 5px 0 15px;"></div>
+              <div class="skeleton skeleton-button"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state d-none">
+      <i class="bi bi-bag-x"></i>
+      <h4>No Orders Yet</h4>
+      <p class="text-muted mb-4">You haven't placed any orders yet. Start shopping to see your orders here.</p>
+      <a href="index.html" class="btn btn-primary px-4">
+        <i class="bi bi-cart me-1"></i>Start Shopping
+      </a>
+    </div>
+    
+    <!-- Orders List -->
+    <div id="ordersList" class="row d-none"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, getDoc, doc, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOZcMMz-KmryhPkO0ith6ThUXmuv7Q4vk",
+      authDomain: "awwal-7171e.firebaseapp.com",
+      projectId: "awwal-7171e",
+      storageBucket: "awwal-7171e.appspot.com",
+      messagingSenderId: "920616341620",
+      appId: "1:920616341620:web:adaf1c282f04a513d44121"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    const loadingState = document.getElementById("loadingState");
+    const emptyState = document.getElementById("emptyState");
+    const ordersList = document.getElementById("ordersList");
+    const orderCount = document.getElementById("orderCount");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await fetchUserOrders(user.uid);
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    async function fetchUserOrders(userId) {
+      try {
+        const ordersQuery = query(
+          collection(db, "orders"),
+          orderBy("timestamp", "desc")
+        );
+        const querySnap = await getDocs(ordersQuery);
+        const orders = [];
+
+        for (const docSnap of querySnap.docs) {
+          const order = { ...docSnap.data(), id: docSnap.id };
+          if (order.userId !== userId) continue;
+
+          const productSnap = await getDoc(doc(db, "products", order.productId));
+          if (productSnap.exists()) {
+            const productData = productSnap.data();
+            order.image = productData.image || "https://via.placeholder.com/100?text=Product";
+            order.name = productData.name;
+            order.price = productData.price;
+          }
+
+          // Format timestamp
+          if (order.timestamp && order.timestamp.toDate) {
+            const dateObj = order.timestamp.toDate();
+            order.orderDate = dateObj.toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'short', 
+              day: 'numeric' 
+            });
+            order.orderTime = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            order.fullDate = `${order.orderDate} at ${order.orderTime}`;
+          }
+
+          orders.push(order);
+        }
+
+        displayOrders(orders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        loadingState.classList.add("d-none");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error loading orders',
+          text: 'We encountered an issue loading your orders. Please try again later.',
+          confirmButtonColor: 'var(--primary)',
+          confirmButtonText: 'Okay'
+        });
+      }
+    }
+
+    function displayOrders(orders) {
+      loadingState.classList.add("d-none");
+      orderCount.textContent = orders.length;
+      
+      if (orders.length === 0) {
+        emptyState.classList.remove("d-none");
+        return;
+      }
+      
+      ordersList.innerHTML = orders.map(order => `
+        <div class="col-md-6 mb-4">
+          <div class="card order-card h-100">
+            <div class="card-body">
+              <div class="d-flex">
+                <img src="${order.image}" alt="${order.name}" class="order-img me-3">
+                <div class="flex-grow-1">
+                  <h5 class="mb-1">${order.name}</h5>
+                  <p class="order-date mb-2">
+                    <i class="bi bi-calendar me-1"></i>${order.fullDate || 'N/A'}
+                  </p>
+                  
+                  <div class="d-flex align-items-center mb-2">
+                    <span class="order-price me-3">$${(order.price || 0).toFixed(2)}</span>
+                    <span class="order-quantity">
+                      <i class="bi bi-box-seam me-1"></i>${order.quantity || 1}
+                    </span>
+                  </div>
+                  
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="order-status status-${order.status.toLowerCase()}">
+                      <i class="bi ${getStatusIcon(order.status)} me-1"></i>${order.status}
+                    </span>
+                    ${order.status === "Pending" ? `
+                      <button class="btn-cancel cancel-order" data-id="${order.id}">
+                        <i class="bi bi-x-circle me-1"></i> Cancel
+                      </button>
+                    ` : ''}
+                  </div>
+                  
+                  <div class="order-actions">
+                    <button class="btn-view">
+                      <i class="bi bi-eye me-1"></i> View Details
+                    </button>
+                    ${order.status === "Delivered" ? `
+                      <button class="btn-view">
+                        <i class="bi bi-arrow-repeat me-1"></i> Reorder
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+      
+      ordersList.classList.remove("d-none");
+    }
+
+    function getStatusIcon(status) {
+      switch(status.toLowerCase()) {
+        case 'pending': return 'bi-hourglass';
+        case 'shipped': return 'bi-truck';
+        case 'delivered': return 'bi-check-circle';
+        case 'cancelled': return 'bi-x-circle';
+        default: return 'bi-question-circle';
+      }
+    }
+
+    // Handle order cancellation
+    document.addEventListener("click", async (e) => {
+      if (e.target.classList.contains("cancel-order") || e.target.closest(".cancel-order")) {
+        const button = e.target.classList.contains("cancel-order") ? e.target : e.target.closest(".cancel-order");
+        const orderId = button.getAttribute("data-id");
+        
+        Swal.fire({
+          title: "Cancel this order?",
+          text: "This action cannot be undone. Are you sure you want to proceed?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: 'var(--danger)',
+          cancelButtonColor: 'var(--gray)',
+          confirmButtonText: "Yes, cancel order",
+          cancelButtonText: "No, keep it",
+          reverseButtons: true
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              button.innerHTML = `<i class="bi bi-arrow-repeat spinner-border spinner-border-sm me-1"></i> Cancelling...`;
+              button.disabled = true;
+              
+              await updateDoc(doc(db, "orders", orderId), {
+                status: "Cancelled",
+                updatedAt: new Date()
+              });
+              
+              // Update UI
+              const statusBadge = button.closest(".d-flex").querySelector(".order-status");
+              statusBadge.innerHTML = `<i class="bi bi-x-circle me-1"></i>Cancelled`;
+              statusBadge.className = "order-status status-cancelled";
+              button.remove();
+              
+              // Update order count
+              orderCount.textContent = parseInt(orderCount.textContent) - 1;
+              
+              Swal.fire({
+                title: "Order Cancelled",
+                text: "Your order has been successfully cancelled.",
+                icon: "success",
+                confirmButtonColor: 'var(--primary)',
+                confirmButtonText: 'Okay'
+              });
+            } catch (error) {
+              console.error("Error cancelling order:", error);
+              button.innerHTML = `<i class="bi bi-x-circle me-1"></i> Cancel`;
+              button.disabled = false;
+              
+              Swal.fire({
+                title: "Error",
+                text: "Failed to cancel order. Please try again.",
+                icon: "error",
+                confirmButtonColor: 'var(--danger)'
+              });
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

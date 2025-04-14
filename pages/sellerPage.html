@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+    <link rel="icon" href="../multimedia/image/Project-logo.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e0e7ff;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 0.375rem;
+            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            box-shadow: var(--box-shadow);
+            position: fixed;
+            height: 100vh;
+            padding: 20px 0;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h4 {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            padding: 0 15px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .sidebar-menu a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .sidebar-menu a.active {
+            font-weight: 500;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            transition: var(--transition);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--gray-light);
+            padding: 15px 20px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+        }
+
+        .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Profile Section */
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 5px solid var(--primary-light);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Styles */
+        .form-control, .form-select {
+            border-radius: var(--border-radius);
+            padding: 10px 15px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        .btn {
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: #3a56d4;
+            border-color: #3a56d4;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 6px 10px;
+            font-weight: 500;
+            border-radius: 20px;
+        }
+
+        /* Table Styles */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: var(--dark);
+            background-color: var(--light);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+                left: -250px;
+            }
+            .sidebar.active {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .toggle-sidebar {
+                display: block !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+        }
+
+        /* Toggle Button */
+        .toggle-sidebar {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Order Status Colors */
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-shipped {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--gray-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toggle Sidebar Button (visible only on mobile) -->
+    <button class="toggle-sidebar" id="toggleSidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-store-alt me-2"></i> Seller Panel</h4>
+        </div>
+        <div class="sidebar-menu">
+            <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#products"><i class="fas fa-box-open"></i> Products</a>
+            <a href="#orders"><i class="fas fa-shopping-bag"></i> Orders</a>
+            <a href="#profile"><i class="fas fa-user-circle"></i> Profile</a>
+            <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
+            <a onclick="logOut()" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Header -->
+        <div class="header">
+            <h2>Dashboard Overview</h2>
+            <div class="d-flex align-items-center">
+                <div class="me-3">
+                    <span class="fw-bold">Welcome back,</span>
+                    <span id="sellerGreeting">Seller</span>
+                </div>
+                <img id="headerProfileImg" src="../multimedia/image/default-profile.png" class="rounded-circle" width="40" height="40" alt="Profile">
+            </div>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase">Total Products</h6>
+                                <h2 id="totalProducts">0</h2>
+                            </div>
+                            <i class="fas fa-box fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase">Total Orders</h6>
+                                <h2 id="totalOrders">0</h2>
+                            </div>
+                            <i class="fas fa-shopping-cart fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase">Pending Orders</h6>
+                                <h2 id="pendingOrders">0</h2>
+                            </div>
+                            <i class="fas fa-clock fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="orders" class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-shopping-bag me-2"></i> Recent Orders</h5>
+                <div class="d-flex">
+                    <input id="orderFilter" type="text" class="form-control form-control-sm me-2" placeholder="Search buyer...">
+                    <div class="btn-group">
+                        <button id="prevPage" class="btn btn-sm btn-outline-secondary">Previous</button>
+                        <button id="nextPage" class="btn btn-sm btn-outline-secondary">Next</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="text-center my-3" id="ordersLoader">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading orders...</span>
+                    </div>
+                </div>
+                <div class="row" id="ordersList"></div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div id="products" class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-box-open me-2"></i> Your Products</h5>
+                <a href="./createProduct.html" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus me-1"></i> Add New Product
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <tbody id="productsDisplay"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile" class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-user-circle me-2"></i> Profile Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                        <div class="mb-3">
+                            <img id="imagePreview" src="../multimedia/image/default-profile.png" class="profile-img" alt="Profile">
+                        </div>
+                        <h4 id="sellerName">Seller Name</h4>
+                        <p id="sellerEmail" class="text-muted">seller@example.com</p>
+                        <div class="mt-3">
+                            <input type="file" id="newImageFile" accept="image/*" class="d-none">
+                            <button onclick="document.getElementById('newImageFile').click()" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-camera me-1"></i> Change Photo
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <form id="updateProfileForm">
+                            <div class="mb-3">
+                                <label for="newName" class="form-label">Business Name</label>
+                                <input type="text" class="form-control" id="newName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newEmail" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="newEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="businessAddress" class="form-label">Business Address</label>
+                                <textarea class="form-control" id="businessAddress" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phoneNumber">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Update Profile
+                            </button>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3"><i class="fas fa-lock me-2"></i>Change Password</h5>
+                        <form id="changePasswordForm">
+                            <div class="mb-3">
+                                <label for="currentPassword" class="form-label">Current Password</label>
+                                <input type="password" class="form-control" id="currentPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label">New Password</th>
+                                <input type="password" class="form-control" id="newPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-key me-1"></i> Change Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs, 
+            getDoc, 
+            doc, 
+            deleteDoc, 
+            updateDoc,
+            query,
+            where
+        } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+        import { 
+            getAuth, 
+            updatePassword, 
+            updateEmail, 
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOZcMMz-KmryhPkO0ith6ThUXmuv7Q4vk",
+            authDomain: "awwal-7171e.firebaseapp.com",
+            projectId: "awwal-7171e",
+            storageBucket: "awwal-7171e.appspot.com",
+            messagingSenderId: "920616341620",
+            appId: "1:920616341620:web:adaf1c282f04a513d44121"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+    
+        // DOM Elements
+        const products = document.getElementById("productsDisplay");
+        const ordersList = document.getElementById("ordersList");
+        const sellerName = document.getElementById("sellerName");
+        const sellerEmail = document.getElementById("sellerEmail");
+        const imagePreview = document.getElementById("imagePreview");
+        const headerProfileImg = document.getElementById("headerProfileImg");
+        const sellerGreeting = document.getElementById("sellerGreeting");
+        const totalProducts = document.getElementById("totalProducts");
+        const totalOrders = document.getElementById("totalOrders");
+        const pendingOrders = document.getElementById("pendingOrders");
+        const updateProfileForm = document.getElementById("updateProfileForm");
+        const changePasswordForm = document.getElementById("changePasswordForm");
+        const ordersLoader = document.getElementById("ordersLoader");
+    
+        // SweetAlert2 Toast
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener("mouseenter", Swal.stopTimer);
+                toast.addEventListener("mouseleave", Swal.resumeTimer);
+            }
+        });
+    
+        let currentUser = null;
+        const groupedOrders = {};
+        const buyerOrderPages = {};
+        const ordersPerBuyerPage = 3;
+        let currentPage = 1;
+        const itemsPerPage = 2;
+        let filteredUserIds = [];
+    
+        // Initialize the dashboard
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                updateSellerGreeting();
+                await Promise.all([
+                    updateDashboardStats(),
+                    displayProducts(),
+                    fetchOrders(),
+                    loadProfileData()
+                ]);
+            } else {
+                window.location.href = "sellerLogIn.html";
+            }
+        });
+    
+        // Toggle sidebar on mobile
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('mainContent').classList.toggle('active');
+        });
+    
+        // Profile Functions
+        async function loadProfileData() {
+            const userRef = doc(db, "seller", currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                sellerName.textContent = userData.businessName || "No Name";
+                sellerEmail.textContent = currentUser.email;
+                imagePreview.src = userData.image || "../multimedia/image/default-profile.png";
+                headerProfileImg.src = userData.image || "../multimedia/image/default-profile.png";
+                
+                // Pre-fill update form
+                document.getElementById("newName").value = userData.businessName || "";
+                document.getElementById("newEmail").value = currentUser.email;
+                document.getElementById("businessAddress").value = userData.businessAddress || "";
+                document.getElementById("phoneNumber").value = userData.phoneNumber || "";
+            }
+        }
+    
+        function updateSellerGreeting() {
+            const hours = new Date().getHours();
+            let greeting;
+            
+            if (hours < 12) greeting = "Good morning";
+            else if (hours < 18) greeting = "Good afternoon";
+            else greeting = "Good evening";
+            
+            sellerGreeting.textContent = `${greeting}, ${currentUser.displayName || "Seller"}`;
+        }
+    
+        // Dashboard Stats
+        async function updateDashboardStats() {
+            try {
+                // Get products count
+                const q = query(collection(db, 'products'), where('sellerId', '==', currentUser.uid));
+                const productsQuery = await getDocs(q);
+                totalProducts.textContent = productsQuery.size;
+                
+                // Get orders count
+                const ordersQuery = await getDocs(collection(db, 'orders'));
+                let orders = 0;
+                let pending = 0;
+                
+                ordersQuery.forEach(doc => {
+                    const order = doc.data();
+                    if (order.sellerId === currentUser.uid) {
+                        orders++;
+                        if (order.status === 'Pending') pending++;
+                    }
+                });
+                
+                totalOrders.textContent = orders;
+                pendingOrders.textContent = pending;
+                
+            } catch (error) {
+                console.error("Error fetching dashboard stats:", error);
+            }
+        }
+    
+        // Products Functions
+        async function displayProducts() {
+            try {
+                const q = query(collection(db, 'products'), where('sellerId', '==', currentUser.uid));
+                const querySnap = await getDocs(q);
+                
+                products.innerHTML = "";
+                
+                if (querySnap.empty) {
+                    products.innerHTML = `
+                        <div class="alert alert-info">
+                            You haven't added any products yet. 
+                            <a href="./createProduct.html" class="alert-link">Add your first product</a>.
+                        </div>`;
+                    return;
+                }
+    
+                let productsHTML = `
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+    
+                querySnap.forEach((docSnap) => {
+                    const product = docSnap.data();
+                    const productID = docSnap.id;
+                    
+                    productsHTML += `
+                        <tr>
+                            <td><img src="${product.image}" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;"></td>
+                            <td>${product.name}</td>
+                            <td>$${product.price.toFixed(2)}</td>
+                            <td>${product.category}</td>
+                            <td>${product.stock || 0}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary me-2" id="${productID}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger" id="${productID}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>`;
+                });
+    
+                products.innerHTML = productsHTML + `</tbody></table>`;
+    
+            } catch (error) {
+                console.error("Error loading products:", error);
+                products.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error loading products. Please try again later.
+                    </div>`;
+            }
+        }
+    
+        // Orders Functions
+        async function fetchOrders() {
+            ordersLoader.style.display = "block";
+            ordersList.innerHTML = "";
+    
+            try {
+                const querySnap = await getDocs(collection(db, "orders"));
+                const productCache = new Map();
+                const tempOrders = {};
+    
+                for (const docSnap of querySnap.docs) {
+                    const order = { ...docSnap.data(), id: docSnap.id };
+                    const userId = order.userId;
+                    const productId = order.productId;
+    
+                    if (!productId) continue;
+    
+                    let productData = productCache.get(productId);
+                    if (!productData) {
+                        const productSnap = await getDoc(doc(db, "products", productId));
+                        if (!productSnap.exists()) continue;
+    
+                        productData = productSnap.data();
+                        productCache.set(productId, productData);
+                    }
+    
+                    if (productData.sellerId !== currentUser.uid) continue;
+    
+                    order.image = productData.image;
+                    order.name = productData.name;
+                    order.price = productData.price;
+    
+                    if (!tempOrders[userId]) tempOrders[userId] = [];
+                    tempOrders[userId].push(order);
+                }
+    
+                // Attach buyer data
+                for (const userId in tempOrders) {
+                    const buyerData = await fetchBuyerData(userId);
+                    tempOrders[userId].forEach(order => {
+                        order.buyerData = buyerData;
+                    });
+                }
+    
+                Object.assign(groupedOrders, tempOrders);
+                renderOrders(groupedOrders);
+    
+            } catch (error) {
+                console.error("Error fetching orders:", error);
+                ordersList.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error loading orders. Please try again later.
+                    </div>`;
+            } finally {
+                ordersLoader.style.display = "none";
+            }
+        }
+    
+        async function fetchBuyerData(userId) {
+            const userSnap = await getDoc(doc(db, "users", userId));
+            return userSnap.exists() ? {
+                name: userSnap.data().fullName || "Unknown Buyer",
+                email: userSnap.data().email || "No Email Provided"
+            } : {
+                name: "Unknown Buyer",
+                email: "No Email Provided"
+            };
+        }
+    
+        function renderOrders(groupedOrders) {
+            ordersList.innerHTML = "";
+    
+            const userIds = filteredUserIds.length ? filteredUserIds : Object.keys(groupedOrders);
+            const totalPages = Math.ceil(userIds.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const visibleUserIds = userIds.slice(startIndex, startIndex + itemsPerPage);
+    
+            visibleUserIds.forEach(userId => {
+                const userOrders = groupedOrders[userId];
+                const buyerData = userOrders[0]?.buyerData || { name: "Unknown Buyer", email: "No Email Provided" };
+    
+                if (!buyerOrderPages[userId]) buyerOrderPages[userId] = 1;
+                const buyerPage = buyerOrderPages[userId];
+                const buyerStart = (buyerPage - 1) * ordersPerBuyerPage;
+                const paginatedOrders = userOrders.slice(buyerStart, buyerStart + ordersPerBuyerPage);
+                const totalBuyerPages = Math.ceil(userOrders.length / ordersPerBuyerPage);
+    
+                ordersList.innerHTML += `
+                    <div class="mb-4 p-3 border rounded shadow-sm">
+                        <h5>👤 Buyer: ${buyerData.name} (${buyerData.email})</h5>
+                        <div class="row">
+                            ${paginatedOrders.map(order => `
+                                <div class="col-md-6 order-item" data-id="${order.id}">
+                                    <div class="card mb-2">
+                                        <div class="card-body d-flex">
+                                            <img src="${order.image}" alt="${order.name}" class="rounded me-3" style="width: 70px; height: 70px; object-fit: cover;">
+                                            <div>
+                                                <h6>${order.name}</h6>
+                                                <p>Price: $${order.price.toFixed(2)}</p>
+                                                <p>Quantity: ${order.quantity}</p>
+                                                <p>Status: <span class="badge ${order.status === "Shipped" ? "bg-success" : "bg-warning"}">${order.status}</span></p>
+                                                <button class="btn btn-sm btn-outline-success mark-shipped" data-id="${order.id}" ${order.status === "Shipped" ? "disabled" : ""}>
+                                                    <i class="fas fa-truck me-1"></i> Mark as Shipped
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join("")}
+                        </div>
+                        <div class="text-end mt-2">
+                            <button class="btn btn-sm btn-outline-secondary me-2 buyer-prev" data-user="${userId}" ${buyerPage === 1 ? "disabled" : ""}>
+                                <i class="fas fa-chevron-left me-1"></i> Prev
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary buyer-next" data-user="${userId}" ${buyerPage === totalBuyerPages ? "disabled" : ""}>
+                                Next <i class="fas fa-chevron-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>`;
+            });
+    
+            document.getElementById("prevPage").disabled = currentPage === 1;
+            document.getElementById("nextPage").disabled = currentPage === totalPages;
+        }
+    
+        // Event Listeners
+        products.addEventListener("click", async (e) => {
+            if (e.target.closest("button")) {
+                const button = e.target.closest("button");
+                const id = button.id;
+                
+                if (button.textContent.includes("Delete")) {
+                    Swal.fire({
+                        title: "Delete Product?",
+                        text: "This action cannot be undone!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#6c757d",
+                        confirmButtonText: "Delete"
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            await deleteDoc(doc(db, "products", id));
+                            await displayProducts();
+                            await updateDashboardStats();
+                            Toast.fire({
+                                icon: "success",
+                                title: "Product deleted"
+                            });
+                        }
+                    });
+                }
+                else if (button.textContent.includes("Edit")) {
+                    window.open(`./editProduct.html?id=${id}`, "_blank");
+                }
+            }
+        });
+    
+        document.getElementById("orderFilter").addEventListener("input", (e) => {
+            const term = e.target.value.toLowerCase();
+            filteredUserIds = Object.keys(groupedOrders).filter(userId => {
+                const { name, email } = groupedOrders[userId][0].buyerData;
+                return name.toLowerCase().includes(term) || email.toLowerCase().includes(term);
+            });
+            currentPage = 1;
+            renderOrders(groupedOrders);
+        });
+    
+        document.getElementById("prevPage").addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderOrders(groupedOrders);
+            }
+        });
+    
+        document.getElementById("nextPage").addEventListener("click", () => {
+            const total = filteredUserIds.length || Object.keys(groupedOrders).length;
+            if (currentPage < Math.ceil(total / itemsPerPage)) {
+                currentPage++;
+                renderOrders(groupedOrders);
+            }
+        });
+    
+        document.addEventListener("click", async (e) => {
+            if (e.target.classList.contains("mark-shipped")) {
+                const orderId = e.target.getAttribute("data-id");
+                Swal.fire({
+                    title: "Mark as Shipped?",
+                    text: "Are you sure you want to update the order status?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, ship it!",
+                    cancelButtonText: "Cancel"
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        await updateDoc(doc(db, "orders", orderId), { status: "Shipped" });
+                        Toast.fire({
+                            icon: "success",
+                            title: "Order marked as shipped"
+                        });
+                        await fetchOrders();
+                        await updateDashboardStats();
+                    }
+                });
+            }
+    
+            if (e.target.classList.contains("buyer-prev")) {
+                const userId = e.target.getAttribute("data-user");
+                if (buyerOrderPages[userId] > 1) {
+                    buyerOrderPages[userId]--;
+                    renderOrders(groupedOrders);
+                }
+            }
+    
+            if (e.target.classList.contains("buyer-next")) {
+                const userId = e.target.getAttribute("data-user");
+                const totalPages = Math.ceil(groupedOrders[userId].length / ordersPerBuyerPage);
+                if (buyerOrderPages[userId] < totalPages) {
+                    buyerOrderPages[userId]++;
+                    renderOrders(groupedOrders);
+                }
+            }
+        });
+    
+        // Profile Update
+        updateProfileForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const newName = document.getElementById("newName").value.trim();
+            const newEmail = document.getElementById("newEmail").value.trim();
+            const businessAddress = document.getElementById("businessAddress").value.trim();
+            const phoneNumber = document.getElementById("phoneNumber").value.trim();
+            const fileInput = document.getElementById("newImageFile");
+            
+            try {
+                const updateData = {
+                    businessName: newName,
+                    businessAddress: businessAddress,
+                    phoneNumber: phoneNumber,
+                    updatedAt: new Date()
+                };
+    
+                // Update email in Auth if changed
+                if (newEmail !== currentUser.email) {
+                    await updateEmail(currentUser, newEmail);
+                    updateData.email = newEmail;
+                }
+    
+                // Handle image upload
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    if (file.size > 2 * 1024 * 1024) {
+                        throw new Error("Image size should be less than 2MB");
+                    }
+                    updateData.image = await toBase64(file);
+                }
+    
+                await updateDoc(doc(db, "seller", currentUser.uid), updateData);
+                
+                Toast.fire({
+                    icon: "success",
+                    title: "Profile updated successfully"
+                });
+                
+                // Refresh profile data
+                await loadProfileData();
+                
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                Toast.fire({
+                    icon: "error",
+                    title: "Failed to update profile",
+                    text: error.message
+                });
+            }
+        });
+    
+        // Change Password
+        changePasswordForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const newPass = document.getElementById("newPassword").value;
+            const confirmPass = document.getElementById("confirmPassword").value;
+            
+            if (newPass !== confirmPass) {
+                Toast.fire({
+                    icon: "error",
+                    title: "Passwords don't match"
+                });
+                return;
+            }
+            
+            try {
+                await updatePassword(currentUser, newPass);
+                Toast.fire({
+                    icon: "success",
+                    title: "Password changed successfully"
+                });
+                changePasswordForm.reset();
+            } catch (error) {
+                console.error("Error changing password:", error);
+                Toast.fire({
+                    icon: "error",
+                    title: "Failed to change password",
+                    text: error.message
+                });
+            }
+        });
+    
+        // Helper Functions
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+    
+        function logOut() {
+            signOut(auth).then(() => {
+                Toast.fire({
+                    icon: "success",
+                    title: "Logged out successfully"
+                });
+                window.location.href = "sellerLogIn.html";
+            });
+        }
+    </script>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
