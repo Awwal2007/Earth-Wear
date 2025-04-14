@@ -106,6 +106,9 @@ async function logInUser(e) {
         else if (error.code === "auth/network-request-failed") {
             errorP.textContent = "Network error. Please check your internet connection";
         }
+        else if (error.code === "Firebase: Error (auth/too-many-requests).") {
+            errorP.textContent = "Too many request, please try again later";
+        }        
         else if (error.message.includes("Email not verified")) {
             errorP.textContent = error.message;
             Swal.fire({
