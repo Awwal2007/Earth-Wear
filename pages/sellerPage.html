@@ -290,13 +290,13 @@
             <h4><i class="fas fa-store-alt me-2"></i> Seller Panel</h4>
         </div>
         <div class="sidebar-menu">
-            <a href="#dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="#products"><i class="fas fa-box-open"></i> Products</a>
-            <a href="../index.html"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="#orders"><i class="fas fa-shopping-bag"></i> Orders</a>
-            <a href="#profile"><i class="fas fa-user-circle"></i> Profile</a>
-            <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
-            <button class="btn" id="logOut" ><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <a href="#dashboard" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#products" class="nav-link"><i class="fas fa-box-open"></i> Products</a>
+            <a href="../index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="#orders" class="nav-link"><i class="fas fa-shopping-bag"></i> Orders</a>
+            <a href="#profile" class="nav-link"><i class="fas fa-user-circle"></i> Profile</a>
+            <a href="#settings" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+            <button class="btn nav-link" id="logOut" ><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </div>
 
@@ -778,7 +778,6 @@
                 const buyerStart = (buyerPage - 1) * ordersPerBuyerPage;
                 const paginatedOrders = userOrders.slice(buyerStart, buyerStart + ordersPerBuyerPage);
                 const totalBuyerPages = Math.ceil(userOrders.length / ordersPerBuyerPage);
-    
                 ordersList.innerHTML += `
                     <div class="mb-4 p-3 border rounded shadow-sm">
                         <h5>👤 Buyer: ${buyerData.name} (${buyerData.email})</h5>
@@ -1000,7 +999,37 @@
                 });
             }
         });
-    
+        
+        // Function to set active nav link
+        function setActiveNavLink() {
+        // Get all nav links
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        // Remove 'active' class from all links
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            link.setAttribute('aria-current', 'false');
+        });
+
+        // Find current active link based on URL
+        const currentPath = window.location.pathname;
+        const activeLink = Array.from(navLinks).find(link => {
+            const linkPath = new URL(link.href).pathname;
+            return currentPath === linkPath || 
+                currentPath.startsWith(linkPath) && linkPath !== '/';
+        });
+
+        // Set active state if found
+        if (activeLink) {
+            activeLink.classList.add('active');
+            activeLink.setAttribute('aria-current', 'page');
+        }
+        }
+
+        // Call on page load and when navigating
+        window.addEventListener('DOMContentLoaded', setActiveNavLink);
+        window.addEventListener('popstate', setActiveNavLink); // Handle back/forward navigation
+        
         // Helper Functions
         function toBase64(file) {
             return new Promise((resolve, reject) => {
