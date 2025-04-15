@@ -547,8 +547,13 @@
                     fetchOrders(),
                     loadProfileData()
                 ]);
+                console.log("User is signed in");
+                
             } else {
+                console.log("User is signed out");
+                
                 window.location.href = "sellerLogIn.html";
+
             }
         });
     
@@ -592,6 +597,9 @@
         // Dashboard Stats
         async function updateDashboardStats() {
             try {
+                totalProducts.textContent = "...";
+                totalOrders.textContent = "...";
+                pendingOrders.textContent = "...";
                 // Get products count
                 const q = query(collection(db, 'products'), where('sellerId', '==', currentUser.uid));
                 const productsQuery = await getDocs(q);
